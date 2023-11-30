@@ -5,7 +5,6 @@ class CategoryController {
   async createCategory(req, res) {
     try {
       const { type } = req.body;
-
       const category = await Category.create({
         type,
       });
