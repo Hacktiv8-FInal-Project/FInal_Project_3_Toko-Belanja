@@ -32,7 +32,6 @@ class ProductController {
   // get
   async getProducts(req, res) {
     try {
-      // Mendapatkan semua produk beserta kategori terkait
       const products = await Product.findAll({
         include: [
           {
@@ -42,7 +41,6 @@ class ProductController {
         ],
       });
 
-      // Mengembalikan respons
       res.status(200).json({
         products: products.map((product) => ({
           id: product.id,
@@ -55,7 +53,6 @@ class ProductController {
         })),
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(500).json({ error: error.message });
     }
   }
@@ -63,11 +60,9 @@ class ProductController {
   // put
   async updateProduct(req, res) {
     try {
-      // Mendapatkan productId dari params dan data produk dari body
       const { id } = req.params;
       const { title, price, stock } = req.body;
 
-      // Mengambil produk yang akan diupdate
       const product = await Product.findByPk(id, {
         include: [
           {
@@ -77,18 +72,15 @@ class ProductController {
         ],
       });
 
-      // Jika produk tidak ditemukan
       if (!product) {
         return res.status(404).json({ error: "Product not found." });
       }
 
-      // Melakukan update pada produk
       product.title = title;
       product.price = price;
       product.stock = stock;
       await product.save();
 
-      // Mengembalikan respons
       res.status(200).json({
         product: {
           id: product.id,
@@ -101,7 +93,6 @@ class ProductController {
         },
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(400).json({ error: error.message });
     }
   }
@@ -138,7 +129,6 @@ class ProductController {
         },
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(400).json({ error: error.message });
     }
   }
@@ -146,32 +136,27 @@ class ProductController {
   // delete
   async deleteProduct(req, res) {
     try {
-      // Mendapatkan productId dari params
       const { id } = req.params;
 
-      // Menghapus produk berdasarkan ID
       const deletedProductCount = await Product.destroy({
         where: {
           id: id,
         },
       });
 
-      // Jika tidak ada produk yang dihapus
       if (deletedProductCount === 0) {
         return res.status(404).json({ error: "Product not found." });
       }
 
-      // Mengembalikan respons
       res.status(200).json({
         message: "Product has been successfully deleted.",
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(400).json({ error: error.message });
     }
   }
 }
-// Fungsi untuk memformat harga ke format rupiah
+
 function formatRupiah(amount) {
   return `Rp ${amount.toLocaleString("id-ID")}`;
 }
