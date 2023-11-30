@@ -3,10 +3,10 @@ const ProductController = require("../controllers/productController");
 const { authentication } = require("../middlewares/authentication");
 const authorization = require("../middlewares/authorization");
 
-router.post("/", authentication, ProductController.createProduct);
 router.get("/", authentication, ProductController.getProducts);
-router.put("/:id", authentication, ProductController.updateProduct);
-router.patch("/:id", authentication, ProductController.updateProductCategory);
-router.delete("/:id", authentication, ProductController.deleteProduct);
+router.post("/", authentication, authorization.admin, ProductController.createProduct);
+router.put("/:id", authentication, authorization.admin, authorization.product, ProductController.updateProduct);
+router.patch("/:id", authentication, authorization.admin, authorization.product, ProductController.updateProductCategory);
+router.delete("/:id", authentication, authorization.admin, authorization.product, ProductController.deleteProduct);
 
 module.exports = router;

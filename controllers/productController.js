@@ -5,7 +5,10 @@ class ProductController {
   async createProduct(req, res) {
     try {
       const { title, price, stock, CategoryId } = req.body;
-
+      const category = await Category.findByPk(CategoryId);
+      if (!category) {
+        return res.status(404).json({ error: "Category not found." });
+      }
       const product = await Product.create({
         title,
         price,
@@ -36,7 +39,6 @@ class ProductController {
         include: [
           {
             model: Category,
-            as: "category",
           },
         ],
       });
@@ -67,7 +69,6 @@ class ProductController {
         include: [
           {
             model: Category,
-            as: "category",
           },
         ],
       });

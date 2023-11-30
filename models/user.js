@@ -8,7 +8,7 @@ const { hashPassword } = require('../utils/bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      
+      User.hasMany(models.TransactionHistory, { foreignKey: "UserId" });
     }
   }
   User.init({
