@@ -1,66 +1,116 @@
-const {Category} = require('../models');
+const { Category, Product } = require("../models");
 
 class CategoryController {
-    static async create(req, res, next) {
-        try {
-            const {type, sold_product_amount} = req.body;
-            const category = await Category.create({
-                type,
-                sold_product_amount
-            });
-            res.status(201).json({
-                id: category.id,
-                type: category.type,
-                sold_product_amount: category.sold_product_amount
-            });
-        } catch (err) {
-            next(err);
-        }
-    }
+  // create
+  async createCategory(req, res) {
+    try {
+      const { type } = req.body;
 
-    static async read(req, res, next) {
-        try {
-            const categories = await Category.findAll();
-            res.status(200).json(categories);
-        } catch (err) {
-            next(err);
-        }
-    }
+      const category = await Category.create({
+        type,
+      });
 
-    static async update(req, res, next) {
-        try {
-            const {type, sold_product_amount} = req.body;
-            const {id} = req.params;
-            const category = await Category.update({
-                type,
-                sold_product_amount
-            }, {
-                where: {
-                    id
-                },
-                returning: true
-            });
-            res.status(200).json(category[1][0]);
-        } catch (err) {
-            next(err);
-        }
+      res.status(201).json({
+        category: {
+          id: category.id,
+          type: category.type,
+          updatedAt: category.updatedAt,
+          createdAt: category.createdAt,
+          sold_product_amount: category.sold_product_amount,
+        },
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
+  }
 
-    static async delete(req, res, next) {
-        try {
-            const {id} = req.params;
-            const category = await Category.destroy({
-                where: {
-                    id
-                }
-            });
-            res.status(200).json({
-                message: "Category deleted successfully"
-            });
-        } catch (err) {
-            next(err);
-        }
+  //get categories
+  async getCategory(req, res) {
+    try {
+      const categories = await Category.findAll({
+        include: [
+          {
+            model: Product,
+            as: "Products",
+            attributes: [
+              "id",
+              "title",
+              "price",
+              "stock",
+              "CategoryId",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        ],
+      });
+
+      res.status(200).json({
+        categories: categories.map((category) => ({
+          id: category.id,
+          type: category.type,
+          sold_product_amount: category.sold_product_amount,
+          updatedAt: category.updatedAt,
+          createdAt: category.createdAt,
+          Products: category.Products,
+        })),
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
+  }
+
+  //update
+  async updateCategory(req, res) {
+    try {
+      const { id } = req.params;
+      const { type } = req.body;
+
+      const category = await Category.findByPk(id);
+
+      if (!category) {
+        return res.status(404).json({ error: "Category not found." });
+      }
+
+      category.type = type;
+      await category.save();
+
+      res.status(200).json({
+        category: {
+          id: category.id,
+          type: category.type,
+          updatedAt: category.updatedAt,
+          createdAt: category.createdAt,
+          sold_product_amount: category.sold_product_amount,
+        },
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  //delete category
+  async deleteCategory(req, res) {
+    try {
+      const { id } = req.params;
+
+      const deletedCategoryCount = await Category.destroy({
+        where: {
+          id: id,
+        },
+      });
+
+      if (deletedCategoryCount === 0) {
+        return res.status(404).json({ error: "Category not found." });
+      }
+
+      res.status(200).json({
+        message: "Category has been successfully deleted.",
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
-module.exports = CategoryController;
+module.exports = new CategoryController();
