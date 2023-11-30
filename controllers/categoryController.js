@@ -32,12 +32,19 @@ class CategoryController {
           {
             model: Product,
             as: "Products",
-            attributes: ["id", "title", "price", "stock", "CategoryId", "createdAt" , "updatedAt"],
+            attributes: [
+              "id",
+              "title",
+              "price",
+              "stock",
+              "CategoryId",
+              "createdAt",
+              "updatedAt",
+            ],
           },
         ],
       });
 
-      // Mengembalikan respons
       res.status(200).json({
         categories: categories.map((category) => ({
           id: category.id,
@@ -49,7 +56,6 @@ class CategoryController {
         })),
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(500).json({ error: error.message });
     }
   }
@@ -57,23 +63,18 @@ class CategoryController {
   //update
   async updateCategory(req, res) {
     try {
-      // Mengambil categoryId dari params dan type dari body
       const { id } = req.params;
       const { type } = req.body;
 
-      // Mengambil kategori yang akan diupdate
       const category = await Category.findByPk(id);
 
-      // Jika kategori tidak ditemukan
       if (!category) {
         return res.status(404).json({ error: "Category not found." });
       }
 
-      // Melakukan update pada kategori
       category.type = type;
       await category.save();
 
-      // Mengembalikan respons
       res.status(200).json({
         category: {
           id: category.id,
@@ -84,7 +85,6 @@ class CategoryController {
         },
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(400).json({ error: error.message });
     }
   }
@@ -92,32 +92,25 @@ class CategoryController {
   //delete category
   async deleteCategory(req, res) {
     try {
-      // Mengambil categoryId dari params
       const { id } = req.params;
 
-      // Menghapus kategori berdasarkan ID
       const deletedCategoryCount = await Category.destroy({
         where: {
           id: id,
         },
       });
 
-      // Jika tidak ada kategori yang dihapus
       if (deletedCategoryCount === 0) {
         return res.status(404).json({ error: "Category not found." });
       }
 
-      // Mengembalikan respons
       res.status(200).json({
         message: "Category has been successfully deleted.",
       });
     } catch (error) {
-      // Menangani kesalahan
       res.status(400).json({ error: error.message });
     }
   }
-
-  
 }
 
 module.exports = new CategoryController();
