@@ -1,13 +1,15 @@
+// models/category.js
+
 "use strict";
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class Category extends Model {
     static associate(models) {
-      // Category.hasMany(Product, {
-      //   foreignKey: "CategoryId",
-      //   as: "products",
-      // });
+      Category.hasMany(models.Product, {
+        foreignKey: "CategoryId",
+        as: "Products",
+      });
     }
   }
   Category.init(
@@ -46,22 +48,11 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Category",
       hooks: {
-        // Hooks untuk menangani penambahan sold product
         afterCreate: async (category) => {
-          // Lakukan penambahan sold product di sini
-          // Misalnya: category.sold_product_amount += 1;
-          // Simpan perubahan
-          // await category.save();
+          // Lakukan penambahan sold product di sini jika diperlukan
         },
       },
     }
   );
-
-  // Menambahkan metode untuk menangani penambahan sold product
-  Category.prototype.incrementSoldProduct = async function () {
-    this.sold_product_amount += 1;
-    await this.save();
-  };
-
   return Category;
 };

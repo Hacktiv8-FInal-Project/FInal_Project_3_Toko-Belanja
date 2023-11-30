@@ -1,4 +1,4 @@
-const { Category } = require("../models");
+const { Category, Product } = require("../models");
 
 class CategoryController {
   // create
@@ -29,11 +29,11 @@ class CategoryController {
     try {
       const categories = await Category.findAll({
         include: [
-          // {
-          //   model: Product,
-          //   as: "Products",
-          //   attributes: ["id", "title", "price", "stock", "CategoryId", "createdAt" , "updatedAt"], // Ganti atribut sesuai dengan kebutuhan Anda
-          // },
+          {
+            model: Product,
+            as: "Products",
+            attributes: ["id", "title", "price", "stock", "CategoryId", "createdAt" , "updatedAt"],
+          },
         ],
       });
 
