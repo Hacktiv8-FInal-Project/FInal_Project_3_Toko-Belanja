@@ -25,12 +25,13 @@ class Authorization {
       if (user.role !== "admin") {
         return res.status(403).json({ message: "Unauthorized" });
       }
+      console.log(user.role, "ini role===========================");
       next();
     } catch (err) {
       res.status(500).json({ message: "Internal server error" });
     }
   }
- 
+
   static async product(req, res, next) {
     const id = req.params.id;
     Product.findOne({
@@ -89,6 +90,8 @@ class Authorization {
 
   static async transaction(req, res, next) {
     const id = req.params.id;
+    const userId = req.userData.id;
+    const user = await User.findByPk(userId);
     TransactionHistory.findOne({
       where: {
         id: id,
@@ -101,16 +104,28 @@ class Authorization {
             devMessge: `Transaction with id ${id} not found`,
           });
         }
+        if (user.role === "admin") {
+          return next();
+        }
+        console.log(
+          transaction.UserId,
+          req.userData.role,
+          "====================================="
+        );
         if (
-          transaction.UserId !== req.userData.id && req.userData.role !== "admin"
+          transaction.UserId !== req.userData.id &&
+          user.role !== "admin"
         ) {
           return res.status(401).json({
             message: "User not authorized",
             devMessge: `User with id ${req.userData.id} not authorized to id ${id}`,
           });
-        } else if (req.userData.role === "admin") {
-          return next();
         }
+        console.log(
+          transaction.UserId,
+          req.userData.id,
+          "+++++++++++++++++++++++++++++++"
+        );
         return next();
       })
       .catch((err) => {
@@ -120,7 +135,6 @@ class Authorization {
         });
       });
   }
-
 }
 
 module.exports = Authorization;
