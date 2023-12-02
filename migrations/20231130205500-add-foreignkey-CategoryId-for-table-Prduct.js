@@ -3,30 +3,15 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn('TransactionHistories', 'ProductId', {
+    await queryInterface.addColumn('Products', 'CategoryId', {
       type: Sequelize.INTEGER,
     })
-    await queryInterface.addConstraint('TransactionHistories', {
-      fields: ['ProductId'],
+    await queryInterface.addConstraint('Products', {
+      fields: ['CategoryId'],
       type: 'foreign key',
-      name: 'fk_TransactionHistories_ProductId',
+      name: 'fk_Products_CategoryId',
       references: {
-        table: 'Products',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    })
-
-    await queryInterface.addColumn('TransactionHistories', 'UserId', {
-      type: Sequelize.INTEGER,
-    })
-    await queryInterface.addConstraint('TransactionHistories', {
-      fields: ['UserId'],
-      type: 'foreign key',
-      name: 'fk_TransactionHistories_UserId',
-      references: {
-        table: 'Users',
+        table: 'Categories',
         field: 'id'
       },
       onDelete: 'cascade',
@@ -35,15 +20,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-    await queryInterface.removeColumn('TransactionHistories', 'ProductId')
-    await queryInterface.removeConstraint('TransactionHistories', 'fk_TransactionHistories_ProductId')
-    await queryInterface.removeColumn('TransactionHistories', 'UserId')
-    await queryInterface.removeConstraint('TransactionHistories', 'fk_TransactionHistories_UserId')
+    await queryInterface.removeColumn('Products', 'CategoryId')
+    await queryInterface.removeConstraint('Products', 'fk_Products_CategoryId')
   }
 };
